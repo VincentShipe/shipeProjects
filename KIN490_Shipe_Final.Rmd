@@ -1,0 +1,406 @@
+---
+title: "KIN_490_Final: An Analysis of NHL Scoring and Goaltending Since the 1981-82 Season"
+author: "Vincent Shipe"
+date: '2023-11-27'
+output:
+  pdf_document
+---
+
+# An Analysis of NHL Scoring and Goaltending Since 1981-82
+
+## Abstract
+
+This report researches trends in scoring and goaltending performance in the NHL since the 1981-82 season, how those trends have changed over time, and what relationship, if any, exists between whatever trends exist in the scoring and goaltending data sets. The topic is extremely important because scoring and goaltending are the two most important things that determine the outcome of a hockey game, and while there are many factors that determine how much scoring or how good the goaltending is in a given game, those other factors do not always determine the results of a game on their own. The research question for this project is actually two questions in one: how has NHL scoring and NHL goaltending changed over time and what influence, if any, do the trends in these two areas affect each other? The research below determines the relationship between these trends and how strong those relationships are.
+
+## Introduction and Methodology
+
+Throughout the history of hockey, the game has changed greatly and nowhere is that more evident than in the changes in scoring and goaltending that have occurred over time. There are plenty of reasons for why these changes exist and, as one would expect, there is a relationship between the two. However, as the game continues to involve more and more technology and more advanced metrics are being developed to try to better evaluate the skill level and effectiveness of skaters and goaltenders, it is important to try and determine which metrics have relationships and where the changes in both of these trends can be explained and where the variation in certain metrics doesn't have any influence over the long-term trends found in the research. The way this is achieved is by pulling data from hockey-reference.com, a public site that stores all recorded information (that is allowed to be publicly available) in the NHL for a given season going all the way back to the Original Six Era (pre-1967). The data pulled for this data includes the average scoring for each season going back to 1981-82 (at the league level so this is not separated by individual teams), a data frame of Vezina winners, the Vezina being the trophy given to the best goaltender in the league for that season, and a data set of every goalie that played in each season going back to the 1981-82 season. The reason why the 1981-82 season was used as the cutoff date for this research study is that that was the first season after 1967 (the beginning of the Expansion Era) where the Vezina trophy was awarded to only one goaltender. For about twenty years before 1982, it was awarded to the entire goaltending tandem (both goalies for that respective team) and was awarded in a different manner than the way it is awarded today, so in an effort to keep the data as consistent as possible, the 1981-82 season was used as the cutoff date for the start of this research. All data frames are manipulated using R and are presented using R Markdown, and the subsequent R packages that were used are tidyverse, which contains the dplyr package, which was used to clean and organize a lot of the recorded data, and ggplot2, which is used to create the visualizations used in the subsequent presentations, ggpubr, which helped create some of the themes and designs used in the visualizations created by the ggplot2 package, and the readxl package, which is used to read in Excel spreadsheets into R since the data pulled from hockey-reference.com always outputs as a .xlsx file rather than a .csv file. The main metrics used to analyze scoring and goaltending may not be well-known by those who do not follow ice hockey, so it is important to quickly define what they are and explain them so it is easy to understand what is being measured and what these metrics are used for. All definitions come from hockey-reference.com, the same source as the data sets used in this subsequent presentation. The first metric is goal per game (G), which measures the number of goals scored, which in this data set is on a per game per season basis. For example, if G is listed at 3.0 for 2007-08, it means that there were an average of three goals scored per game in the 2007-08 season. Goals Against Average (GAA) is how many goals a goalie concedes on average in a game and is calculated by dividing goals against by minutes played and then multiplying by 60 (60 minutes is the length of a regulation game). Save Percentage (SV%) is what percentage of shots against a goaltender is saving; (this one is easy enough to understand as saving 90% of shots is recorded as a save percentage of .900) it is calculated by dividing saves by shots against and then multiplying by 100 to convert it into a percentage. These two metrics are some of the simpler metrics used in analyzing goaltender performance and the more ubiquitous publicly available metrics available thanks to how simple they are for the average hockey fan or even the non-hockey fans who are just starting to get into the sport to understand what they are and what they are measuring. The next two metrics are more advanced and are used a lot more today in advanced analysis of goaltending performance in the NHL. The first of the advanced metrics is Goals Against %- (GA%-), which is goals allowed percentage relative to the league average of goals allowed; 100 is the average number and the goal of the metric is to have lower numbers as GA%- below 100 is better and shows a more effective, better than average goalie. The other advanced metric is Goals Saved Above Average (GSAA) which is goals prevented given save percentage and shots faced compared to league average save percentage on the same number of shots; with this metric, higher is better and there is a possibility for the number of goals saved above average to be negative, which means that a goaltender is performing very badly and is far below average compared to the rest of the league. As stated earlier, the latter two metrics (GA%- and GSAA) are used a lot more nowadays in analyzing how goaltenders are actually performing as they compare goaltenders to each other rather than simply to the results on the ice and isolate performance on their own rather than letting themselves be influenced by events on the ice that have nothing to do with the goaltender which can happen in determining simpler metrics like goals against average (GAA) or save percentage (SV%). When actually analyzing the data, the first thing done was cleaning the data to make sure that NA values (the majority of which are recorded in Goals Saved Above Average (GSAA) since that one has the highest games or minutes played requirement in order to begin recording the number). The approximately forty data frames for each season of goalie data was then modified to keep only one case of every player since the data was recorded in multiple rows for someone who had changed teams throughout the season, so the max number of games played (which would be recorded as 'TOT' in the team variable) would be kept within the data set for each goalie. Each data frame also had a 'Year' column added in order to keep the data organized by the year/season that the data was from so it could stay in order and be easy to group by year once all of the data frames had been merged. Once the merging of the data frames occurs, summary statistics, particularly the means, are taken of each of the four goaltending metrics listed above that were available in the data set. The Vezina winners data frame and the average scoring data frame are then filtered to only contain the data from the 1981-82 season to the 2022-23 season, the most recent full season with recorded data. This latter frame was then merged with the summary statistics for the full goaltending data set (not the Vezina winners data set). Visualizations were then produced using ggplot2 to determine how these values have changed over time (the time-series graphs) and if there is any linear relationship between the variables (scatter plots). Correlation coefficients are also calculated to determine how strong or how weak the relationship was between the variables and if the correlation is either positive or negative. Histograms were then made to see if there was any skewing in the data set and if the changes in trends shown in the time-series plots had shown which metrics had begun to produce skewed data compared to normally distributed data. With all of the correlation coefficients analyzed and scatter plots created, correlation can be clearly established, but since that does not equal causation, linear regression is then analyzed to determine if these four goaltending metrics are statistically significant at explaining the variation in goals over time, first as a group and then again with each variable separately in their own individual linear regression models. All of this has been done to try to answer the following question: "how has NHL scoring and NHL goaltending changed over time and what influence, if any, do the trends in these two areas affect each other?"
+
+### Set Working Directory
+
+A separate working directory was created for all of the files since there were over forty different Excel sheets acquired for this research. This was done to keep everything organized within my own computer and keep it from getting lost within folders of other files; the following code simply sets the working directory to the special folder for the project with all of the data sets that will later be imported here.
+
+```{r}
+setwd("~/KIN 490 Final")
+```
+
+### Load Packages
+
+The following packages were imported and used for most of the research in the following presentation. Tidyverse contains two packages used in this research: dplyr and ggplot2. Dplyr is used to clean and modify the imported data and contains the pipe ("%\>%") operator used to keep the code clean and easily legible. Ggplot2 is used to create all of the visualizations in this project from the scatter plots to the histograms to the time-series plots. The ggpubr package is used to assist with some of the colors, themes, and labels on the graphs and help with the styling of the visualizations. The readxl package is designed to read Excel sheets and import them from the folder into the global environment where the data is stored as data frames that can then be manipulated and studied in this research; this package was necessary because the data could be only be downloaded off of hockey-reference.com as Excel spreadsheets rather than comma-separated values (csv files) which is normally how most data is inputted into R.
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(readxl)
+```
+
+### Load in Data Sets
+
+```{r}
+Vezina_Winners <- read_xlsx('Vezina_Winners.xlsx')
+NHL_Avg_Scoring <- read_xlsx('NHL_Season_Averages.xlsx')
+NHL_Goalies_81_82 <- read_xlsx('NHL_Goalies_81_82.xlsx')
+NHL_Goalies_82_83 <- read_xlsx('NHL_Goalies_82_83.xlsx')
+NHL_Goalies_83_84 <- read_xlsx('NHL_Goalies_83_84.xlsx')
+NHL_Goalies_84_85 <- read_xlsx('NHL_Goalies_84_85.xlsx')
+NHL_Goalies_85_86 <- read_xlsx('NHL_Goalies_85_86.xlsx')
+NHL_Goalies_86_87 <- read_xlsx('NHL_Goalies_86_87.xlsx')
+NHL_Goalies_87_88 <- read_xlsx('NHL_Goalies_87_88.xlsx')
+NHL_Goalies_88_89 <- read_xlsx('NHL_Goalies_88_89.xlsx')
+NHL_Goalies_89_90 <- read_xlsx('NHL_Goalies_89_90.xlsx')
+NHL_Goalies_90_91 <- read_xlsx('NHL_Goalies_90_91.xlsx')
+NHL_Goalies_91_92 <- read_xlsx('NHL_Goalies_91_92.xlsx')
+NHL_Goalies_92_93 <- read_xlsx('NHL_Goalies_92_93.xlsx')
+NHL_Goalies_93_94 <- read_xlsx('NHL_Goalies_93_94.xlsx')
+NHL_Goalies_94_95 <- read_xlsx('NHL_Goalies_94_95.xlsx')
+NHL_Goalies_95_96 <- read_xlsx('NHL_Goalies_95_96.xlsx')
+NHL_Goalies_96_97 <- read_xlsx('NHL_Goalies_96_97.xlsx')
+NHL_Goalies_97_98 <- read_xlsx('NHL_Goalies_97_98.xlsx')
+NHL_Goalies_98_99 <- read_xlsx('NHL_Goalies_98_99.xlsx')
+NHL_Goalies_99_00 <- read_xlsx('NHL_Goalies_99_00.xlsx')
+NHL_Goalies_00_01 <- read_xlsx('NHL_Goalies_00_01.xlsx')
+NHL_Goalies_01_02 <- read_xlsx('NHL_Goalies_01_02.xlsx')
+NHL_Goalies_02_03 <- read_xlsx('NHL_Goalies_02_03.xlsx')
+NHL_Goalies_03_04 <- read_xlsx('NHL_Goalies_03_04.xlsx')
+NHL_Goalies_05_06 <- read_xlsx('NHL_Goalies_05_06.xlsx')
+NHL_Goalies_06_07 <- read_xlsx('NHL_Goalies_06_07.xlsx')
+NHL_Goalies_07_08 <- read_xlsx('NHL_Goalies_07_08.xlsx')
+NHL_Goalies_08_09 <- read_xlsx('NHL_Goalies_08_09.xlsx')
+NHL_Goalies_09_10 <- read_xlsx('NHL_Goalies_09_10.xlsx')
+NHL_Goalies_10_11 <- read_xlsx('NHL_Goalies_10_11.xlsx')
+NHL_Goalies_11_12 <- read_xlsx('NHL_Goalies_11_12.xlsx')
+NHL_Goalies_12_13 <- read_xlsx('NHL_Goalies_12_13.xlsx')
+NHL_Goalies_13_14 <- read_xlsx('NHL_Goalies_13_14.xlsx')
+NHL_Goalies_14_15 <- read_xlsx('NHL_Goalies_14_15.xlsx')
+NHL_Goalies_15_16 <- read_xlsx('NHL_Goalies_15_16.xlsx')
+NHL_Goalies_16_17 <- read_xlsx('NHL_Goalies_16_17.xlsx')
+NHL_Goalies_17_18 <- read_xlsx('NHL_Goalies_17_18.xlsx')
+NHL_Goalies_18_19 <- read_xlsx('NHL_Goalies_18_19.xlsx')
+NHL_Goalies_19_20 <- read_xlsx('NHL_Goalies_19_20.xlsx')
+NHL_Goalies_20_21 <- read_xlsx('NHL_Goalies_20_21.xlsx')
+NHL_Goalies_21_22 <- read_xlsx('NHL_Goalies_21_22.xlsx')
+NHL_Goalies_22_23 <- read_xlsx('NHL_Goalies_22_23.xlsx')
+```
+
+### Filter out NAs in Goals Saved Above Average
+
+Goals Saved Above Average (GSAA) was found to have the most number of NAs (values were blank in the data set compared to the other three metrics that are used in the analysis) or were found to be the one metric with a null value compared to the other three in most cases, probably due to that metric having the most stringent requirements in order to have a value recorded for that metric, so each data set was filtered out to get rid of any goaltender who didn't play enough games or minutes to have a recorded value in the Goals Saved Above Average (GSAA) column.
+
+```{r}
+NHL_Goalies_81_82 <- NHL_Goalies_81_82 %>% filter(GSAA != 'NA')
+NHL_Goalies_82_83 <- NHL_Goalies_82_83 %>% filter(GSAA != 'NA')
+NHL_Goalies_83_84 <- NHL_Goalies_83_84 %>% filter(GSAA != 'NA')
+NHL_Goalies_84_85 <- NHL_Goalies_84_85 %>% filter(GSAA != 'NA')
+NHL_Goalies_85_86 <- NHL_Goalies_85_86 %>% filter(GSAA != 'NA')
+NHL_Goalies_86_87 <- NHL_Goalies_86_87 %>% filter(GSAA != 'NA')
+NHL_Goalies_87_88 <- NHL_Goalies_87_88 %>% filter(GSAA != 'NA')
+NHL_Goalies_88_89 <- NHL_Goalies_88_89 %>% filter(GSAA != 'NA')
+NHL_Goalies_89_90 <- NHL_Goalies_89_90 %>% filter(GSAA != 'NA')
+NHL_Goalies_90_91 <- NHL_Goalies_90_91 %>% filter(GSAA != 'NA')
+NHL_Goalies_91_92 <- NHL_Goalies_91_92 %>% filter(GSAA != 'NA')
+NHL_Goalies_92_93 <- NHL_Goalies_92_93 %>% filter(GSAA != 'NA')
+NHL_Goalies_93_94 <- NHL_Goalies_93_94 %>% filter(GSAA != 'NA')
+NHL_Goalies_94_95 <- NHL_Goalies_94_95 %>% filter(GSAA != 'NA')
+NHL_Goalies_95_96 <- NHL_Goalies_95_96 %>% filter(GSAA != 'NA')
+NHL_Goalies_96_97 <- NHL_Goalies_96_97 %>% filter(GSAA != 'NA')
+NHL_Goalies_97_98 <- NHL_Goalies_97_98 %>% filter(GSAA != 'NA')
+NHL_Goalies_98_99 <- NHL_Goalies_98_99 %>% filter(GSAA != 'NA')
+NHL_Goalies_99_00 <- NHL_Goalies_99_00 %>% filter(GSAA != 'NA')
+NHL_Goalies_00_01 <- NHL_Goalies_00_01 %>% filter(GSAA != 'NA')
+NHL_Goalies_01_02 <- NHL_Goalies_01_02 %>% filter(GSAA != 'NA')
+NHL_Goalies_02_03 <- NHL_Goalies_02_03 %>% filter(GSAA != 'NA')
+NHL_Goalies_03_04 <- NHL_Goalies_03_04 %>% filter(GSAA != 'NA')
+NHL_Goalies_05_06 <- NHL_Goalies_05_06 %>% filter(GSAA != 'NA')
+NHL_Goalies_06_07 <- NHL_Goalies_06_07 %>% filter(GSAA != 'NA')
+NHL_Goalies_07_08 <- NHL_Goalies_07_08 %>% filter(GSAA != 'NA')
+NHL_Goalies_08_09 <- NHL_Goalies_08_09 %>% filter(GSAA != 'NA')
+NHL_Goalies_09_10 <- NHL_Goalies_09_10 %>% filter(GSAA != 'NA')
+NHL_Goalies_10_11 <- NHL_Goalies_10_11 %>% filter(GSAA != 'NA')
+NHL_Goalies_11_12 <- NHL_Goalies_11_12 %>% filter(GSAA != 'NA')
+NHL_Goalies_12_13 <- NHL_Goalies_12_13 %>% filter(GSAA != 'NA')
+NHL_Goalies_13_14 <- NHL_Goalies_13_14 %>% filter(GSAA != 'NA')
+NHL_Goalies_14_15 <- NHL_Goalies_14_15 %>% filter(GSAA != 'NA')
+NHL_Goalies_15_16 <- NHL_Goalies_15_16 %>% filter(GSAA != 'NA')
+NHL_Goalies_16_17 <- NHL_Goalies_16_17 %>% filter(GSAA != 'NA')
+NHL_Goalies_17_18 <- NHL_Goalies_17_18 %>% filter(GSAA != 'NA')
+NHL_Goalies_18_19 <- NHL_Goalies_18_19 %>% filter(GSAA != 'NA')
+NHL_Goalies_19_20 <- NHL_Goalies_19_20 %>% filter(GSAA != 'NA')
+NHL_Goalies_20_21 <- NHL_Goalies_20_21 %>% filter(GSAA != 'NA')
+NHL_Goalies_21_22 <- NHL_Goalies_21_22 %>% filter(GSAA != 'NA')
+NHL_Goalies_22_23 <- NHL_Goalies_22_23 %>% filter(GSAA != 'NA')
+```
+
+### Filter only total seasons from each goalie and Add Year to Each Frame for Merging
+
+In many cases, there are several goalies who played for several teams throughout the duration of a season and their metrics are recorded in multiple rows, one for each team that they played for in that season and one for 'Total' that combines all of their numbers for each team. The data frames needed to be filtered in order to only contain that 'Total' row, which is why each data frame is filtered on the max number of games played (GP). The group by 'Player' functionality allows the data to be selected for each individual player rather than simply for the entire data frame regardless of which player it is (which is not what is wanted for this research). A 'Yr' column is added to simply add which year the data is from based on the season that the data is from (ex. data from the 1981-82 season is recorded as the year 1982 and so on). This is done to keep the data organized once all of the data frames are merged together and allow for year to be used in visualizations to create time-series plots, which helps analyze the changing trends in goaltending from 1981-82 to 2022-23.
+
+```{r}
+NHL_Goalies_81_82 <- NHL_Goalies_81_82 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1982)
+NHL_Goalies_82_83 <- NHL_Goalies_82_83 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1983)
+NHL_Goalies_83_84 <- NHL_Goalies_83_84 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1984)
+NHL_Goalies_84_85 <- NHL_Goalies_84_85 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1985)
+NHL_Goalies_85_86 <- NHL_Goalies_85_86 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1986)
+NHL_Goalies_86_87 <- NHL_Goalies_86_87 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1987)
+NHL_Goalies_87_88 <- NHL_Goalies_87_88 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1988)
+NHL_Goalies_88_89 <- NHL_Goalies_88_89 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1989) 
+NHL_Goalies_89_90 <- NHL_Goalies_89_90 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1990)
+NHL_Goalies_90_91 <- NHL_Goalies_90_91 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1991)
+NHL_Goalies_91_92 <- NHL_Goalies_91_92 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1992)
+NHL_Goalies_92_93 <- NHL_Goalies_92_93 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1993)
+NHL_Goalies_93_94 <- NHL_Goalies_93_94 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1994)
+NHL_Goalies_94_95 <- NHL_Goalies_94_95 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1995)
+NHL_Goalies_95_96 <- NHL_Goalies_95_96 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1996)
+NHL_Goalies_96_97 <- NHL_Goalies_96_97 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1997)
+NHL_Goalies_97_98 <- NHL_Goalies_97_98 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1998)
+NHL_Goalies_98_99 <- NHL_Goalies_98_99 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 1999)
+NHL_Goalies_99_00 <- NHL_Goalies_99_00 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2000)
+NHL_Goalies_00_01 <- NHL_Goalies_00_01 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2001)
+NHL_Goalies_01_02 <- NHL_Goalies_01_02 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2002)
+NHL_Goalies_02_03 <- NHL_Goalies_02_03 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2003)
+NHL_Goalies_03_04 <- NHL_Goalies_03_04 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2004)
+NHL_Goalies_05_06 <- NHL_Goalies_05_06 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2006)
+NHL_Goalies_06_07 <- NHL_Goalies_06_07 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2007)
+NHL_Goalies_07_08 <- NHL_Goalies_07_08 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2008)
+NHL_Goalies_08_09 <- NHL_Goalies_08_09 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2009)
+NHL_Goalies_09_10 <- NHL_Goalies_09_10 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2010)
+NHL_Goalies_10_11 <- NHL_Goalies_10_11 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2011)
+NHL_Goalies_11_12 <- NHL_Goalies_11_12 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2012)
+NHL_Goalies_12_13 <- NHL_Goalies_12_13 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2013)
+NHL_Goalies_13_14 <- NHL_Goalies_13_14 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2014)
+NHL_Goalies_14_15 <- NHL_Goalies_14_15 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2015)
+NHL_Goalies_15_16 <- NHL_Goalies_15_16 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2016)
+NHL_Goalies_16_17 <- NHL_Goalies_16_17 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2017)
+NHL_Goalies_17_18 <- NHL_Goalies_17_18 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2018)
+NHL_Goalies_18_19 <- NHL_Goalies_18_19 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2019)
+NHL_Goalies_19_20 <- NHL_Goalies_19_20 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2020)
+NHL_Goalies_20_21 <- NHL_Goalies_20_21 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2021)
+NHL_Goalies_21_22 <- NHL_Goalies_21_22 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2022)
+NHL_Goalies_22_23 <- NHL_Goalies_22_23 %>% group_by(Player) %>% filter(GP == max(GP)) %>% mutate(Yr = 2023)
+```
+
+### Merge the Goalie Data Frames Together
+
+All of the different seasonal data frames are merged together into one large data frame here, which is why the year was added to each data frame in previous lines of code. The 'full_join' function is used to simply take everything from all of the data sets and merge them together rather than join on names or any of the mathematical metrics that may be the same. By using 'full_join' it allows everything from every data frame to be transferred into one giant data frame of all the goalie statistics since the 1981-82 season that has every goaltender that payed enough games to have a recorded value for Goals Saved Above Average.
+
+```{r}
+NHL_Goalies_Since1982 <- NHL_Goalies_81_82 %>% full_join(NHL_Goalies_82_83) %>% full_join(NHL_Goalies_83_84) %>% full_join(NHL_Goalies_84_85) %>% full_join(NHL_Goalies_85_86) %>%
+  full_join(NHL_Goalies_86_87) %>% full_join(NHL_Goalies_87_88) %>% full_join(NHL_Goalies_88_89) %>% full_join(NHL_Goalies_89_90) %>% full_join(NHL_Goalies_90_91) %>% full_join(NHL_Goalies_91_92) %>%
+  full_join(NHL_Goalies_92_93) %>% full_join(NHL_Goalies_93_94) %>% full_join(NHL_Goalies_94_95) %>% full_join(NHL_Goalies_95_96) %>% full_join(NHL_Goalies_96_97) %>% full_join(NHL_Goalies_97_98) %>%
+  full_join(NHL_Goalies_98_99) %>% full_join(NHL_Goalies_99_00) %>% full_join(NHL_Goalies_00_01) %>% full_join(NHL_Goalies_01_02) %>% full_join(NHL_Goalies_02_03) %>% full_join(NHL_Goalies_03_04) %>%
+  full_join(NHL_Goalies_05_06) %>% full_join(NHL_Goalies_06_07) %>% full_join(NHL_Goalies_07_08) %>% full_join(NHL_Goalies_08_09) %>% full_join(NHL_Goalies_09_10) %>% full_join(NHL_Goalies_10_11) %>%
+  full_join(NHL_Goalies_11_12) %>% full_join(NHL_Goalies_12_13) %>% full_join(NHL_Goalies_13_14) %>% full_join(NHL_Goalies_14_15) %>% full_join(NHL_Goalies_15_16) %>% full_join(NHL_Goalies_16_17) %>%
+  full_join(NHL_Goalies_17_18) %>% full_join(NHL_Goalies_18_19) %>% full_join(NHL_Goalies_19_20) %>% full_join(NHL_Goalies_20_21) %>% full_join(NHL_Goalies_21_22) %>% full_join(NHL_Goalies_22_23) 
+```
+
+### Select Variables from the Goalie Data Set and Remove Asterisks from Player Variable
+
+Only a few of the variables are needed in the fully merged goalie data set are needed so the merged data frame is filtered to only contain the needed rows rather than the other 30-35 rows of data that are not needed in this analysis. Also, in each of the seasonal data frames, the award winners for that season are marked with an asterisk in the 'Player' column. While it is not imperative to get rid of that asterisk, it was removed for aesthetic reasons since the code to do so was easy enough: it is the 'gsub' function listed below the selecting of the columns needed for the analysis that will be conducted in a later portion of this report.
+
+```{r}
+NHL_Goalies_Since1982 <- NHL_Goalies_Since1982 %>% select(Player, Yr, GP, `SV%`, GAA, `GA%-`, GSAA)
+
+NHL_Goalies_Since1982$Player <- gsub("\\*", "", NHL_Goalies_Since1982$Player)
+```
+
+### Summary Statistics of NHL Goalies Since 1982
+
+The dplyr package is used here to get the means of all of the important four metrics that are going to be used in future analyses grouped by the year that the goaltenders played in (once again showing the importance of adding the 'Yr' column to each data set earlier before all of the data sets were merged together). All of these summary statistics are taken regardless of player and regardless of the team that they were playing for that season; all of the data in the summary statistics data frame is the average for that metric on a league-wide basis for that season.
+
+```{r}
+summary(NHL_Goalies_Since1982)
+
+NHL_Goalies_Summary_Since1982 = NHL_Goalies_Since1982 %>%
+  group_by(Yr) %>%
+  summarise("Avg SV%" = mean(`SV%`),
+            "Avg GAA" = mean(GAA),
+            "Avg GA%-" = mean(`GA%-`), 
+            "Avg GSAA" = mean(GSAA))
+head(NHL_Goalies_Summary_Since1982, 10)
+```
+
+### Filter Vezina Winners By Season
+
+The Vezina Winners data set is sliced just to contain the winners from the 1981-82 season onwards, which includes the first 41 rows of the data and is then filtered to only select the variables needed for analysis: the season, the goalie who won the award, their goals against average (GAA) for that season, and their save percentage (SV%) for that season. GA%- and Goals Saved Above Average were not included in the initial data set that was downloaded off of hockey-reference, which is why they are not listed in the Vezina Winners data frame here.
+
+```{r}
+Vezina_Winners <- Vezina_Winners %>%
+  slice(1:41)
+Vezina_Winners <- Vezina_Winners %>%
+  select(Season, Player, GAA, `SV%`)
+```
+
+### Filter Season Scoring Data
+
+The same is then done to the average scoring data by season. This time, rows 2-42 are taken out of the data set since the inital row contains what the averages have been so far in the 2023-24 season, which is not included in this data analysis since the 2023-24 season is still ongoing and cannot provide any complete data. The modified data frame is then filtered to only select its rows that will be used in future analysis, which are the season, total games played (GP), goals per game (G), save percentage (SV%), and goals against average (GAA). The latter two metrics are not used, but are still selected to be able to compare the values with the values from the goalie summary data frame, which is not done here but could be done in future research.
+
+```{r}
+NHL_Avg_Scoring <- NHL_Avg_Scoring %>%
+  slice(2:42)
+NHL_Avg_Scoring <- NHL_Avg_Scoring %>%
+  select(Season, GP, G, `SV%`, GAA)
+```
+
+### Merge Goalies Summary and Average Scoring
+
+Rather than using 'full_join' or some other join function from the dplyr package, the cbind package is used to merge the goalie summary data frame with the average scoring data frame since most of the columns are not measuring the same variable, so there is no variable that can be used to join the two data frames in a conventional 'join' function.
+
+```{r}
+NHL_Goalies_Summary_Since1982 <- NHL_Goalies_Summary_Since1982 %>% arrange(desc(Yr))
+NHL_Merged_Data <- cbind(NHL_Goalies_Summary_Since1982, NHL_Avg_Scoring)
+```
+
+## Visualizations
+
+### Time-Series Graph of Goals Per Game by Season
+
+Looking at the first of the visualizations, a time-series plot of goals per game per season, a clear pattern emerges: throughout the 1980's, scoring remains very high approaching 4 goals per game in some seasons before a small drop in the latter half of the decade; this is known as the Live Puck Era when offense was prevalent and scoring was very high. In the 1990's however, a precipitous drop in scoring occurs in the early part of the decade and drop below 3 goals per game beginning in the 1994-95 season and staying consistently below the 3 goals per game mark beginning in the 1996-97 season. The drop in scoring continues into the early 2000's and get below 2.75 consistently from 2002 up until 2005 when a lockout canceled the entirety of the 2004-05 season. After the lockout, scoring trends upward immediately in the 2005-06 season before dropping again during the late 2000's and early 2010's while still staying below its early 2000's low point. Around the middle of the 2010's, scoring begins to rise again and cracks 3 goals per game for the first time since 1995-96 in the 2018-19 season. The positive scoring trend continues into the new decade and scoring in the NHL has continued to trend in a general upward direction since 2015.
+
+```{r}
+ggplot(NHL_Merged_Data, aes(x = Yr, y = G)) + geom_line(color = "#478778") + labs(title = 'Goals Per Game by Year Since 1982', x = "Year", y = "Goals Scored Per Game")
+```
+
+### Scatter Plot Between Goals per Game and Save Percentage (with Correlation Coefficient)
+
+A scatter plot is then created to determine the relationship between save percentage and goals per game from the average scoring data set. This is done purely to see from one data set without any merging or true manipulation if there is any relationship between the two metrics, which is why the average scoring data set was chosen instead of the merged data frame that also contains the summary statistics from the fully merged goalie data set. It is clear that there is a very strong negative linear relationship between goals per game and save percentage just by looking at the scatter plot, but the correlation coefficient is taken of the two metrics to prove numerically if this relationship exists and to show just exactly how strong it is. With a correlation coefficient of -0.9556, it is clear that the relationship between goals per game and save percentage is a very strong negative relationship.
+
+```{r}
+ggplot(NHL_Avg_Scoring, aes(x = G, y = `SV%`)) +
+  geom_point() +
+  geom_smooth(method = lm, color = "red") +
+  labs(title = 'Relationship Between Goals Per Game and Save Percentage', 
+       x = 'Goals Per Game', y = 'Save Percentage')
+```
+
+```{r}
+cor(NHL_Avg_Scoring$G, NHL_Avg_Scoring$`SV%`)
+```
+
+### Time-Series Graphs of Goals Against Average (GAA) and Save Percentage (SV%) of Vezina Winners (with Correlation Coefficient)
+
+Time-series plots are then taken of Goals Against Average and Save Percentage from the Vezina Winners data set to see how the league's best goalies' performance has changed over time and the graphs appear to be relative mirrors of each other. In the 1980's while goals against average was high for Vezina Winners (there is an entire stretch from 1985 to 1988 where every Vezina winner had a GAA above 3.0), save percentage remained low (only one goalie in that same time frame had a save percentage above .900 [Ron Hextall with a .902 in 1986-87] and two goalies [John Vanbiesbrouck, 1985-86 and Grant Fuhr, 1987-88] had save percentages below .890). As goals against average decreases in the 1990's, save percentage greatly increases in the same period of time. This huge statistical improvement among the league's best goalies levels out in the 2000's but noticeably does not regress to the performances of the 1980's as no goalie since 1988-89 has won the Vezina Trophy with a GAA above 3.0 and only three (Connor Hellebuyck, 2019-20, Ed Belfour 1992-93, and Patrick Roy 1989-90) had a GAA above 2.5. Also, every Vezina winning goaltender since the 2004-05 lockout has had a save percentage above .920, so even as scorign continues to trend upwards, goaltending, at least among the league's very best, has not regressed. Seeing how similarly the two graphs moved, it was deemed important to determine if there was a correlation between the two metrics, and with a correlation coefficient of -0.888, it is clear that there is a strong negative correlation between GAA and SV% when analyzing Vezina winners since 1981-82.
+
+```{r}
+VezinaGAAplot = ggplot(Vezina_Winners, aes(x = Season, y = GAA, group = 1)) +
+  geom_line(color = "#228B22") +
+  labs(title = "Goals Against Average of Vezina Winners Since 1982", 
+       x = 'Season', y = 'Goals Against Average')
+
+VezinaSVPctplot = ggplot(Vezina_Winners, aes(x = Season, y = `SV%`, group = 1)) +
+  geom_line(color = "#6082B6") +
+  labs(title = "Save Percentage of Vezina Winners Since 1982", 
+       x = 'Season', y = 'Save Percentage')
+
+ggarrange(VezinaGAAplot, VezinaSVPctplot, ncol = 2, nrow = 1)
+```
+
+```{r}
+cor(Vezina_Winners$GAA, Vezina_Winners$`SV%`)
+```
+
+### Scatter Plots for Goals compared to Average Save Percentage, Average Goals Against Average, Average GA%-, and Average Goals Saved Above Average
+
+Scatter plots were constructed comparing each of the four goaltending metrics in the merged data set to goals per game to determine what relationship, if any, existed between goals per game and any of these metrics. For the first two plots, comparing goals per game to average save percentage and average goals against average respectively, it is clear that there is a very strong relationship between goals per game and both of the two respective variables just by looking at the graph. To determine how strong the relationship is, the correlation coefficient is taken of goals per game and average save percentage as well as goals per game and average goals against average. In both cases the correlation is found to be strong, with the correlation between goals per game and average save percentage being a very strong negative relationship, proven by the correlation coefficient of -0.95 while the correlation between goals per game and average goals against average is a very strong positive relationship with a correlation coefficient of 0.99. For the other two metrics (Average GA%- and Average GSAA) however, there does not appear to be a very strong relationship when looking at the graphs. There appears to be a lot more variation in the data and it is difficult to truly establish a linear relationship just by looking at the scatter plots. When analyzing the correlation coefficients, it is clear that the relationship between goals per game and Average GA%- is the weakest of the four relationships with a correlation coefficient of only -0.14, so the relationship between the two is negative, but still very weak. The relationship between goals per game and average GSAA is weak as well, with a correlation coefficient of only 0.30, but in this case, the relationship is positive. This is to be expected as GA%- and GSAA are designed to isolate goaltender performance on their own and not be affected by a lot of the other things that happen on the ice in a given game, which is done to make sure that goaltender analysis of performance is not affected by external factors as goals against average and save percentage are affected by the potency of the opposing offense as well as the quality of the goaltender's teammates, so those external factors can increase or decrease the less complicated metrics and affect those results through no action of the goaltender. The latter two advanced metrics however, are designed to have a weak relationship with more superficial metrics and compare goaltenders to each other, which is what GA%- and goals saved above average do, rather than simply just synthesize the results of what happens on the ice and spit out a number, which is what happens in the calculations of save percentage and goals against average. This is why GA%- and goals saved above average are seen as better metrics for truly evaluating goaltender performance and why those who follow hockey analytics use those metrics to determine which goaltenders are performing well rather than the more conventional and ubiquitous metrics like save percentage and goals against average.
+
+```{r}
+ggplot(NHL_Merged_Data, aes(x = G, y = `Avg SV%`)) + geom_point() + geom_smooth(method = lm, color = "purple") + labs(title = 'Relationship Between Goals Per Game and Avg Save Percentage', x = 'Goals Per Game', y = 'Average Save Percentage')
+ggplot(NHL_Merged_Data, aes(x = G, y = `Avg GAA`)) + geom_point() + geom_smooth(method = lm, color = "dodgerblue") + labs(title = 'Relationship Between Goals Per Game and Avg Goals Against Average', x = 'Goals Per Game', y = 'Avg Goals Against Average')
+ggplot(NHL_Merged_Data, aes(x = G, y = `Avg GA%-`)) + geom_point() + geom_smooth(method = lm, color = "orange") + labs(title = 'Relationship Between Goals Per Game and Average GA%-', x = 'Goals Per Game', y = 'Average GA%-')
+ggplot(NHL_Merged_Data, aes(x = G, y = `Avg GSAA`)) + geom_point() + geom_smooth(method = lm, color = "green") + labs(title = 'Relationship Between Goals Per Game and Avg Goals Saved Above Average', x = 'Goals Per Game', y = 'Avg Goals Saved Above Average')
+```
+
+```{r}
+cor(NHL_Merged_Data$G, NHL_Merged_Data$`Avg SV%`)
+cor(NHL_Merged_Data$G, NHL_Merged_Data$`Avg GAA`)
+cor(NHL_Merged_Data$G, NHL_Merged_Data$`Avg GA%-`)
+cor(NHL_Merged_Data$G, NHL_Merged_Data$`Avg GSAA`)
+```
+
+### Time-Series Graphs of Avg Save Percentage, Avg Goals Against Average, Avg GA%-, and Avg Goals Saved Above Average
+
+Time-series graphs similar to the ones constructed using the Vezina winners data frame earlier are now constructed using data from the NHL_Merged_Data data set, this time for each of the four goaltending metrics that are present in that data set, save percentage, goals against average, GA%-, and goals saved above average. In the Save Percentage time-series graph, a clear trend emerges where the average save percentage in the league begins to steadily increase in the 1990's before a quick but sharp drop after the 2004-05 lockout which is then followed by a steady increase for about a decade before a more gradual drop in the late 2010's and early 2020's. The opposite trend exists for goals against average, as it begins steadily falling in the mid 1980's only to have a precipitous drop in the 1990's, staying low in the early 2000's before a sharp increase after the 2004-05 lockout, followed by a steady decrease until the middle of the 2010's when it begins to increase again as averaging scoring cracked the 3 goals per game barrier in the 2021-22 season for the first time since 2005-06. However, with GA%- and Goals Saved Above Average, there does not appear to be a general trend over time present in the graphs of these two metrics. The data points highly fluctuate from season to season from 1981-82 onwards and the lack of a clear trend could potentially show that the data points from the fully merged goalie data set (with over 2,300 observations) seem to be normally distributed and are not skewed in any particular direction thanks to the lack of a present trend in both the graphs for GA%- and GSAA, which, again, is to be expected because of the way the two advanced metrics are calculated where other goaltenders' performance is factored in and some of the external noise that happens over the course of a given game is not able to affect the data as much as it would for the measurements of simpler metrics like save percentage and goals against average. Whatever the case, it is a good idea to create histograms for each of these variables to determine if there is any skewing in the data for the fully merged goalie data frame (with over 2,300 observations in it) for each of the four goaltending metrics used in this report.
+
+```{r}
+ggplot(NHL_Merged_Data, aes(x = Yr, y = `Avg SV%`)) + geom_line(color = "maroon") + labs(title = 'Avg Save Percentage Since 1982', x = "Year", y = "Average Save Percentage")
+ggplot(NHL_Merged_Data, aes(x = Yr, y = `Avg GAA`)) + geom_line(color = "#0072B2") + labs(title = 'Avg Goals Against Average Since 1982', x = "Year", y = "Avg Goals Against Average")
+ggplot(NHL_Merged_Data, aes(x = Yr, y = `Avg GA%-`)) + geom_line(color = "red") + labs(title = 'Average GA%- Since 1982', x = "Year", y = "Average GA%-")
+ggplot(NHL_Merged_Data, aes(x = Yr, y = `Avg GSAA`)) + geom_line(color = "orange") + labs(title = 'Avg Goals Saved Above Average Since 1982', x = "Year", y = "Avg Goals Saved Above Average")
+```
+
+### Histogram of Save Percentage, Goals Against Average, Goals Against %-, and Goals Saved Above Average
+
+The following histograms were constructed upon seeing how the time-series graphs above looked and sparked a curious question: is the data for these metrics normally distributed or is it skewed in a certain way? When looking at the graphs, one cannot help but see the patterns in average save percentage and average goals against average since 1982 and how the averages generally increase and decrease respectively, but one also can notice how there is a lot more fluctuation in the graph of GA%- and goals saved above average over time; there does not appear to be a general trend in the data over time since 1981-82. When the histograms are created, one can see that the trends in the above time-series plots play out the same way in seeing how the data for each of these metrics is skewed. The save percentage histogram is clearly skewed to the left with more values to the left of its peak while the opposite is the case for the goals against average histogram: the data is skewed to the right with more values to the right of the peak than to the left of it. Interestingly, both of the advanced goaltender metrics (GA%- and Goals Saved Above Average) appear to be relatively normally distributed, which means that outliers may not be affecting them as much as the skewed metrics and that they will be more powerful at measuring the differences in performance and better at quantifying the quality of a goaltender's performance over a season.
+
+```{r}
+SVPct_Hist = ggplot(NHL_Goalies_Since1982, aes(x = `SV%`)) + geom_histogram(fill = "#9F2B68") + labs(title = 'Save Percentage Histogram', x = 'Save Percentage')
+GAA_Hist = ggplot(NHL_Goalies_Since1982, aes(x = GAA)) + geom_histogram(fill = "#FDDA0D") + labs(title = 'Goals Against Average Histogram', x = 'Goals Against Average')
+GAPct_Hist = ggplot(NHL_Goalies_Since1982, aes(x = `GA%-`)) + geom_histogram(fill = "#478778") + labs(title = 'Goals Against %- Histogram', x = 'GA%-')
+GSAA_Hist = ggplot(NHL_Goalies_Since1982, aes(x = GSAA)) + geom_histogram(fill = "#7C3030") + labs(title = 'Goals Saved Above Average Histogram', x = 'Goals Saved Above Average')
+
+ggarrange(SVPct_Hist, GAA_Hist, GAPct_Hist, GSAA_Hist, ncol = 4, nrow = 1)
+```
+
+## Linear Regression Analysis
+
+Correlation has been established between goals per game and save percentage and goals per game and goals against average, but correlation does not necessarily equal causation, so linear regression models are created to determine which variables of the four, if any, are significant at explaining the variation in goals per game seen over time since the 1981-82 season. First, multiple regression models are constructed with each of the four goaltending metrics being independent variables and goals per game (G) as the dependent variable. In the first regression model, it is found that average Goals Saved Above Average is not statistically significant, so it removed from the second model with the hope that removing the insignificant variable will make it easier to get a more accurate measurement of how each variable affects the variation in goals per game. In the second summary with only significant independent variables, it is shown that 99.58% of the variation in goals per game is caused by variation in average Save Percentage, average Goals Against Average, and average GA%- (R-squared of 0.9958).
+
+The final regression equation then looks like this: **G = -7.721374 + (10.659858 x Avg SV%) + (1.231542 x Avg GAA) - (0.024332 x Avg GA%-)**
+
+```{r}
+reg1 <- lm(G ~ `Avg SV%` + `Avg GAA` + `Avg GA%-` + `Avg GSAA`, NHL_Merged_Data)
+
+summary(reg1)
+```
+
+```{r}
+reg2 <- lm(G ~ `Avg SV%` + `Avg GAA` + `Avg GA%-`, NHL_Merged_Data) # Remove Avg GSAA since it was determined to not be significant
+
+summary(reg2)
+```
+
+Thanks to the multiple regression analysis, it is clear that only three of the four goaltending metrics are significant when it comes to explaining the variation in goals per game since the 1981-82 season. However, it is still not entirely certain which variable is the best of the three at explaining all of that variation over time. Therefore, three different simple regression models are created for each of the three variables that were deemed to be significant in the multiple regression models.
+
+In the first model, it is clear that save percentage is significant when explaining the variation of goals per game since the 1981-82 season thanks to the low p-values of both the model and of the variable itself. Based on the R-squared, it can be shown that 90.8% of the variation in goals per game since the 1981-82 season can be explained by variation in average save percentage over the same time period. Even if it is not the strongest explaining variable of the three that have individual regression models performed, it is clear that save percentage does a lot of explaining and is a very important variable to look at when trying to understand how scoring in the NHL has changed over time and it can be assumed that changes to average save percentage measurements in the future will have an impact on the goals per game measurements in the future.
+
+```{r}
+regindy1 <- lm(G ~ `Avg SV%`, NHL_Merged_Data)
+
+summary(regindy1)
+```
+
+The second model measures average Goals Against Average and it is clear that goals against average is not only significant at explaining the variation in goals per game, but is even better than save percentage at explaining that variation. The R-squared of 0.9877 means that 98.77% of the variation in goals per game since the 1981-82 season can be explained by variation in average GAA over that same time period. The low p=values for the variable and the model confirm that both the model and variable are significant at measuring variation of goals per game, the dependent variable. Goals Against Average is shown to be the strongest variable at explaining the variation in goals per game over time and is likely also the strongest predictor of how goals per game will change over time given variation or changes in goals against average.
+
+```{r}
+regindy2 <- lm(G ~ `Avg GAA`, NHL_Merged_Data)
+
+summary(regindy2)
+```
+
+The final individual regression model looks at GA%-, the only one of the two advanced goaltending metrics that was found to be statistically significant in the earlier multiple regression models where all the goaltending metrics were measured as part of the same model. In this model, the p-values for the model and the independent variable are both extremely high at 0.3819 and 0.382 respectively, meaning that the model and variable are not statistically significant. This means that GA%- is not a statistically significant at explaining variation in goals per game. Therefore, it is not relevant to explain the R-squared or to try to explain the regression equation.
+
+```{r}
+regindy3 <- lm(G ~ `Avg GA%-`, NHL_Merged_Data)
+
+summary(regindy3)
+```
+
+## Why These Trends Are Happening
+
+The context really matters when looking at data like this: being able to explain why these trends are happening and what caused these changes in scoring rates and goaltending rates over time since the 1981-82 season. Being able to explain these trends is probably the most important part when looking at the data. Obviously, this can be a challenge without proper research, but as a hockey fan, there's a lot of internal knowledge about hockey's history and the NHL, so it's easy enough for me to fill some of the gaps and explain some of these trends. The first noticeable trend is the noticeable drop off in scoring rates in the 1990's coupled with a major improvement in goaltender performance in that same decade. At that time in the NHL, there was no salary cap in the league, meaning that teams in larger markets with more money like the New York Rangers, Toronto Maple Leafs, Montreal Canadiens, Los Angeles Kings, and Detroit Red Wings could spend to their hearts' content to acquire a lot of great players and build a super team while smaller market teams with less money were not able to compete for the same pool of talent, meaning that there was a very wide skill gap between the richer teams and the poorer teams. This was exacerbated in the 1990's thanks to the league expanding greatly throughout the decade, going from 21 teams at the start of the decade to 28 teams by the end of the decade. A lot of that expansion put teams in smaller hockey markets with a smaller fan base and less money and resources to spend to acquire and keep top talent; places like Miami, Tampa Bay, San Jose, Anaheim, and Nashville for example. In an effort to account for this skill gap, teams began to develop tactics like the Neutral Zone Trap which were designed to completely stymy opposing offenses and limit scoring, which proved to be greatly successful; teams employed this tactic to great success; the New Jersey Devils won three Stanley Cups between 1995 and 2003 playing the Neutral Zone Trap and small market teams like the Florida Panthers and Dallas Stars made the Stanley Cup Finals in 1996 and 1999 respectively playing very defensive, low-scoring hockey based on the Neutral Zone Trap. This expansion also spread an already thin talent pool even thinner throughout the league and made it so even more teams needed to deploy tactics like the Neutral Zone Trap to neutralize the massive skill deficits that were present in the league at that time. This small market expansion was also coupled with a lack of revenue sharing throughout the league and a lot of instability in the Canadian dollar, which precipitated a lot of relocation of Canadian teams to new American markets that were often not natural hockey markets like Phoenix and meant that teams that were losing revenue or not profitable could not afford to keep top talent in order to keep their books balanced.
+
+This low-scoring trend only began to change after a lockout that canceled the entirety of the 2004-05 season, which precipitated major changes to the rules of the league and to the overall financial and business structure of the league. Financially, a salary cap was instituted and revenue sharing was greatly increased after the lockout at the behest of a lot of the small-market owners in the league. This helped balance a lot of the skill deficits in the league at the time and spread talent more evenly between larger market teams and smaller market teams, which, again, helped bridge a lot of the gaps in skill between the teams and allowed smaller market teams to acquire and retain top talent. Tactically, the offsides rule was changed to try and spark some more scoring; before the lockout, there was a rule called the two-line pass rule that meant that passes could not pass both the blue line and the red center line otherwise it was an illegal pass, which is partly why the Neutral Zone Trap was so effective. The abolition of the rule after the 2004-05 lockout allowed teams to stretch the game out, stretch out opposing defenses, and helped make the game a lot faster, which effectively neutered the Neutral Zone Trap and allowed offenses to play a more North-South style of game, which proved to be more conducive to high scoring in the immediate aftermath of the lockout. However, scoring noticeably fell after the seasons immediately after the lockout and did not begin to rise again until the mid-2010's when young players like Connor McDavid and Auston Matthews, who had developed their game throughout their youth hockey, bantam hockey, midget hockey, and junior hockey careers after the lockout when the game began to re-focus on speed and offensive creativity, began to make the NHL and emerge as some of the top talent in the league. Young talent like McDavid and Matthews in the mid-2010's and Jack Hughes and Connor Bedard today were developed as the game emphasized more speed and skill with less emphasis on physicality and fighting which led to increases in scoring and will likely continue to lead to increases in scoring, especially as skating becomes an even more vital skill and speed becomes even more paramount to teams and players' success in the league.
+
+## Future Trends
+
+Scoring will likely continue to increase as the game continues to get faster and the game emphasizes skill more and more, likely to a level of 3.25-3.50 goals per game, but scoring will likely not get back to where it was at its peak in the 1980's. Goaltenders have clearly gotten too good for scoring to return to the scoring rates that were occurring in the 1980's, which can be shown in the lack of regression or drop-off in performance of the league's best goaltenders (see the time-series plots of the Vezina winners for proof). The assumption is that the best goaltenders in the league will continue to save 92-92.5% of shots faced and will continue to allow less than 2.5 goals per game even as the average goals against average continues to increase and average save percentage continues to drop around the league. While the average performance of goaltenders are likely to regress in the near future as the game gets quicker, faster, more skilled, and less physical, the best of the best will remain the best of the best and will not regress back to lower levels of performance. Goaltenders have simply gotten too good for scoring to ever get back to where it was in the Live Puck Era. However, the general trends will likely mean that scoring will continue to increase over time as the 2020's continue and young players like Bedard and Hughes continue to develop and even younger talent like Macklin Celebrini and Cole Eiserman (Top Prospects in the 2024 Draft class) or James Hagens and Michael Misa (Top Prospects in the 2025 Draft class) enter the league, develop their skills, and contribute to the game's growing emphasis on skill and offense.
+
+## Conclusion
+
+Looking at all of the data, visualizations, and regression models that have been performed throughout this report, it is clear that the overall trend of scoring in the NHL since 1981-82 has been trending upwards after the 2004-05 lockout, which was immediately preceded by a precipitous drop off in scoring from 1990 to 2005 thanks to the lack of a salary cap creating major skill deficits between larger market teams and smaller market teams, which then caused those smaller market teams to try to innovate tactically to try and account for that gap, which led to highly defensive tactics being deployed that led to huge decreases in offensive output. Also, these changes in goal scoring are explained by variation and changes in save percentage, where there is a strong negative relationship between the two. A strong negative relationship was also found to exist between save percentage and goals against average, all of which is to be expected considering that higher save percentages often mean that goals against average is lower and that that goaltender would concede fewer goals thanks to their higher save percentage. As one could expect, a strong positive relationship was found to exist between goals per game and goals against average. Relationships were found to exist between goals per game and the two advanced goaltending metrics measured in the data set: GA%- and Goals Saved Above Average (GSAA), but were found to be weak; a negative relationship exists between goals per game and GA%- and a positive relationship exists between goals per game and GSAA, but again, both of these relationships were found to be weak with very low correlation coefficients. 
+
+Correlation was established, but the linear regression models were what was used to truly establish any causation between the four goaltending metrics and the variation of goals per game throughout the analyzed time period (1981-82 to 2022-23). It was found in the linear regression models that Goals Against Average was the best variable to explain variation in goals per game as it explains over 98% of the variation in goals per game. Goals Against Average can also be used to predict how goals per game would change over time and would likely be a very good predictor of how goals per game would change over time. Save percentage was also found to be a very strong explainer of variation in goals per game and could also be used as a predictor of future variations as well. However, it only explains about 90-91% of the variation in goals per game, which explains a smaller percentage of variation than goals against average does. Both of the advanced goaltending metrics, GA%- and GSAA were found to not be statistically significant at explaining variation of goals per game, which is not necessarily bad and to be expected considering that these advanced metrics are designed to try to limit external factors' influence over the calculation of these metrics in an effort to make it easier to use them to actually analyze goaltender performance and determine if goaltenders are actually performing well rather than using metrics that are not resistant to external factors and could be determined more by external factors like opposing offensive skill or quality of the defense in front of said goaltender. 
+
+Overall, there have been great changes in scoring trends in the NHL since the 1981-82 season with scoring decreasing greatly in the 1990's and hitting its absolute low in the early 2000's before beginning to trend back upwards in the years immediately following the 2004-05 lockout. A brief fallow period in scoring follows before beginning to trend consistently upwards in the mid-2010's as more young talent that was developed to play the faster, more skilled game that was emphasized after the lockout began to enter the league and fully hit their stride, bringing about an incredible increase in NHL scoring rates in the late 2010's and early 2020's. This then is coupled with a similar trend in goals against average across the entire league and the opposite trends occurring with save percentage across the entire league. However, among the league's best goaltenders, there is no major change in goals against average and save percentage as time goes on and the game continues; this leads to the following conclusion: goaltenders have simply gotten too good in order for scoring to return to the rates they were in the 1980's. It is very similar to why there are no more .400 hitters in baseball: it is not that hitters got worse; it's that pitchers got so much better. A similar trend exists in hockey: it's not that players got less skilled; it's that goaltenders got a lot better in the 1990's thanks to players like Patrick Roy and Dominik Hasek revolutionizing how the position is played and coaches like Francois Allaire developing actual techniques for goaltenders to make save which allowed them to be more athletic and natural with their movements and allowed them to make better saves and have better rebound control, which helped the best goaltenders get a lot better and become much better at stopping goals from being scored. 
+
+## Individual Reflection
+
+This was a project that was admittedly difficult to perform on my own, especially considering that there were over 40 data sets that were used that ended up with over 2,300 observations of data in the largest data set. It was a bit cumbersome to grab that many data sheets off of the internet and then figure out what was needed to clean and modify the data sets before merging them together and what type of research should be done on all of this data. It is a topic that I am extremely passionate about as I love ice hockey; I play with friends in my spare time and do a lot of research into hockey analytics and the day-to-day operations of the league both on the business and player personnel sides. Also, I currently work in the Sports Science Department here at UM and have done a lot of work with analytics and data both there and in some business analytics classes I have taken in my spare time, which gave me a lot of prior experience in R and in analytical coding before this class and presentation, which gave me a lot of the background knowledge that I needed both for statistical knowledge and for the ability to design and code such visualizations, regression models, and data cleaning operations. While it would have been nice to get some help and be a part of a group for this project, I still am glad that I was able to do this project on my own and do a really deep study into something that I am really interested in and care about a lot rather than have to tone it down to try and make it something that could be understood by a group. Being able to take a look at big data for a sport that I really care about and follow to a great extent and continue to put a lot of what I learned from my business analytics classes into data analysis in sports, which, again, is something I do on a daily basis with my job in the sports science department. Research like this is very similar to a lot of what we do there: analyzing data and figuring out where trends are over time and what could be causing those trends. Granted, the sports science data is a lot different and more often than not involves data recorded from trackers and technology used in practices and during strength and conditioning drills rather than actual game, scrimmage, or race data depending on the team whose data is being analyzed that day. Conducting a lot of in-depth research in sports analytics and being able to take a deep dive into my favorite sport was a really tantalizing proposition for me and I was really excited to get started and do this project. It was a lot of work and at times got quite difficult, especially when trying to craft the presentation in a coherent way and make sure that there were coherent explanations not just behind all of the data that was analyzed, but also why the data was analyzed in the way that it was and why each process was done in this particular research project. I would say that the writing portion was probably the more difficult portion of the project as I found the data analysis portion of the project a bit less of a challenge than the writing portion of the data project. I am very proud of the work that I was able to do both regarding the data analysis and the writing portions of the project however and am very proud that a project like this was well-received when it was presented about a week ago. It felt like validation for a lot of the hard work that I had done in the weeks before November 27th to make sure that everything was done and completed correctly and on time and was a validation of the work that I had done in pursuing this research topic and taking all of this upon myself in order to properly find a reserach question and how all of this data could answer those questions. I feel that I did an excellent job even if the work was challenging at times by myself and I am glad that I could put the same level of love and dedication into every aspect of the project rather than have to outsource parts of it to group members who maybe would not be as interested in hockey as I am or as interested in taking a deep dive into sports analytics as I am. I am glad that I was able to get everything done and explain it in as clear and eloquent a way as possible and I am very proud of all of the work that was undertaken in this research project from beginning to the end. 
